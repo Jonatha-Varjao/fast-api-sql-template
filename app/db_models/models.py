@@ -14,6 +14,7 @@ class User(Base, Timestamp):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     full_name = Column(String(255), index=True)
     username = Column(String(255), unique=True, index=True)
+    email = Column(String(255), index=True, unique=True)
     password = Column(String)
     is_superuser = Column(Boolean, unique=False, default=False)
     is_active = Column(Boolean, unique=False, default=True)

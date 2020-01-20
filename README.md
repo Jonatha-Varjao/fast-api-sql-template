@@ -41,3 +41,5 @@ High-performance Async REST API, in Python. FastAPI + SQLAlchemy + Uvicorn + Pos
 ## TODO
 * Change the orm to **database**: Async database driver connections, supports SQLAlchemy Core queries
 * Make the initial user default or optional
+* Cache
+* Session JWT using Redis

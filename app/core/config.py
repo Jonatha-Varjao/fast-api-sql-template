@@ -35,11 +35,9 @@ ALEMBIC_CONFIG: DatabaseURL = DatabaseURL(drivername="postgresql+psycopg2", user
                                           host=DATABASE_SERVER, port=DATABASE_PORT, database=DATABASE_DB)
 API_V1_STR = "/api/v1"
 
-print(f'{SQLALCHEMY_DATABASE_URI}')
-
 SECRET_KEY = config("SECRET_KEY", cast=str)
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 600  # 60 minutes * 24 hours * 8 days = 8 days
+ACCESS_TOKEN_EXPIRE_MINUTES = config("ACCESS_TOKEN_EXPIRE_MINUTES", cast=int)  # 60 minutes * 24 hours * 8 days = 8 days
 
 BACKEND_CORS_ORIGINS = config(
     "BACKEND_CORS_ORIGINS"
@@ -50,4 +48,3 @@ FIRST_SUPERUSER = config("FIRST_SUPERUSER")
 FIRST_SUPERUSER_PASSWORD = config("FIRST_SUPERUSER_PASSWORD")
 FIRST_SUPERUSER_EMAIL = config("FIRST_SUPERUSER_EMAIL")
 FIRST_SUPERUSER_FULLNAME = config("FIRST_SUPERUSER_FULLNAME")
-print(FIRST_SUPERUSER_FULLNAME)

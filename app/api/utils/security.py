@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from app.api.utils.db import get_db
 from app.core import config
 from app.core.jwt import ALGORITHM
-from app.db_models.models import User, EnvUser
+from app.db_models.models import User
 from app.models.token import TokenPayload
 from app.core.return_messages import codes, ptBr
 
@@ -43,6 +43,7 @@ def get_current_user(
             status_code=HTTP_403_FORBIDDEN, detail="Token expirou/invalido"
         )
     user = crud_user.get(db, user_id=token_data.user_data.id)
+    print(user)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user

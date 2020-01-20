@@ -11,9 +11,7 @@ from app.core import config
 from app.core.jwt import create_access_token
 from app.core.return_messages import codes, ptBr
 from app.core.security import get_password_hash
-from app.crud.environment import (
-    get_environment
-)
+
 from app.crud.user import (
     authenticate,
     get_by_email,
@@ -44,30 +42,23 @@ def login_access_token(
     user = authenticate(
         db, email_or_username=data.username, password=data.password
     )
-    find_env = get_environment(db, env_id=data.environment)
-    if not find_env:
-        raise HTTPException(status_code=400, detail="Incorrect Environment ID")
     if not user:
         return Response(json.dumps({
             "messageCode": codes['validation'],
-            "title": "Dados Incorretos",
             "message": ptBr['eIncorrectDataLogin']
         }),
             status_code=422)
     if not is_active(user):
         return Response(json.dumps({
             "messageCode": codes['db'],
-            "title": "Usuário Inativo",
             "message": ptBr['eUserNotActive']
         }),
-            status_code=404)
+            status_code=401)
     user_response = {
         "id":str(user.id),
         "username":user.username,
         "full_name":user.full_name,
         "email":user.email,
-        "document":user.document,
-        "phone_number":user.phone_number,
         "is_superuser":user.is_superuser
     }
     access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -76,7 +67,6 @@ def login_access_token(
             "access_token": create_access_token(
                 data={
                     "user_data": user_response,
-                    "environment": data.environment
                 },
                 expires_delta=access_token_expires
             ),

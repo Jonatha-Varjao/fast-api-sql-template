@@ -18,6 +18,5 @@ class LoginOAuth(BaseModel):
     grant_type: str = None
     username: str
     password: str
-    environment: str
     client_id: str = None
     client_secret: str = None

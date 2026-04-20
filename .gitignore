@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# AI / Agentic coding tools
+.claude/
+.cursorrules
+.cursor/
+.github/copilot-instructions.md
+.aider/

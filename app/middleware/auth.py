@@ -5,9 +5,15 @@ from app.config import settings
 
 
 class OAuth2Middleware(BaseHTTPMiddleware):
-    PUBLIC_PATHS = ["/health", "/docs", "/redoc",
-                    f"{settings.api_v1_str}/openapi.json",
-                    f"{settings.api_v1_str}/login"]
+    PUBLIC_PATHS = [
+        "/",
+        "/health",
+        "/docs",
+        "/redoc",
+        "/openapi.json",
+        f"{settings.api_v1_str}/openapi.json",
+        f"{settings.api_v1_str}/login",
+    ]
 
     def __init__(self, app, provider=None):
         super().__init__(app)

@@ -84,7 +84,7 @@ app/
 │   ├── db_exceptions.py           # DBException middleware
 │   └── validation.py              # FieldValidation middleware
 ├── tasks/                          # Dramatiq task queue
-│   ├── __init__.py                # Broker setup (Redis + AsyncIO + Retry + Results)
+│   ├── __init__.py                # Broker setup (RabbitMQ + AsyncIO + Retry + Results)
 │   └── example.py                 # Example async tasks
 ├── config.py                       # Pydantic Settings (from .env)
 ├── main.py                         # FastAPI app entry point
@@ -104,7 +104,7 @@ Request → Middlewares (OAuth2 → DBException → FieldValidation) → Routers
 - `app/infrastructure/persistence/database.py` — AsyncSessionLocal, get_db generator
 - `app/domain/auth/entities.py` — OAuth2UserInfo dataclass
 - `app/middleware/auth.py` — OAuth2Middleware (validates Bearer token via provider)
-- `app/tasks/__init__.py` — Dramatiq broker (Redis + AsyncIO + Retries + Results)
+- `app/tasks/__init__.py` — Dramatiq broker (RabbitMQ + AsyncIO + Retries + Results)
 
 ### Auth Flow (OAuth2)
 - Provider validates JWT via JWKS endpoint
@@ -119,7 +119,7 @@ Migrations live in `app/alembic/versions/`. The env imports all models to regist
 - Migrations: `ALEMBIC_URL` with `psycopg2` driver
 
 ### Task Queue (Dramatiq)
-- Broker: Redis with AsyncIO, Retry (exponential backoff), Results middleware
+- Broker: RabbitMQ with AsyncIO, Retry (exponential backoff), Results middleware
 - Tasks are async functions decorated with `@dramatiq.actor(async_=True, ...)`
 - Worker: `uv run dramatiq -m app.tasks`
 
@@ -129,4 +129,4 @@ Migrations live in `app/alembic/versions/`. The env imports all models to regist
 
 ### Redis
 - Cache + pub/sub for WebSocket broadcast
-- Also used by Dramatiq broker and results backend (shared connection)
+- Used by Dramatiq results backend (shared with broker connection)

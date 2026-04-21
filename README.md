@@ -45,7 +45,7 @@ Separates business logic from infrastructure concerns. `domain/` has **zero fram
 - **Async-native**: `AsyncIO` middleware lets you write `async def` tasks
 - **Result backend**: `Message.get_result(block=True, timeout=...)` — wait synchronously from an API endpoint
 - **Exponential backoff**: Built-in via `Retry` middleware
-- **Redis**: Single broker for both Dramatiq and cache (simpler ops)
+- **RabbitMQ**: Battle-tested message broker for Dramatiq tasks (shared with other services)
 
 ### Why aiokafka over Faust or Bytewax?
 - **Lightweight**: No RocksDB, no WAL overhead
@@ -57,8 +57,8 @@ Separates business logic from infrastructure concerns. `domain/` has **zero fram
 - **Native asyncio**: aiokafka is async-first; confluent-kafka is a C-binding wrapper
 - **Pythonic**: Cleaner API, no C compilation required
 
-### Why Redis for both cache and Dramatiq?
-Shared broker simplifies infrastructure — one Redis instance serves multiple purposes. Use `redis://redis:6379` in docker-compose for all services.
+### Why Redis for cache and pub/sub?
+Redis handles WebSocket broadcast pub/sub and HTTP response caching. RabbitMQ handles Dramatiq task queue. Separate brokers simplify monitoring and scaling.
 
 ### Why OAuth2 over built-in JWT?
 - No need to manage token signing keys
@@ -307,12 +307,12 @@ async def generate_invoice(order_id: str):
 **4. Run the worker:**
 
 ```bash
-uv run dramatiq -m app.tasks
+uv run dramatiq app.tasks
 ```
 
 For auto-reload during development:
 ```bash
-uv run dramatiq -m app.tasks --watch
+uv run dramatiq app.tasks --watch
 ```
 
 ---
@@ -390,9 +390,9 @@ app.add_middleware(FieldValidationMiddleware)  # 1st (outermost)
 
 ### Inspect Dramatiq queues
 ```bash
-# With Redis, use redis-cli
-redis-cli LLEN dramatiq.default
-redis-cli LRANGE dramatiq.default 0 -1
+# With RabbitMQ, use rabbitmqctl
+rabbitmqctl list_queues name messages consumers
+# Or check the management UI at http://localhost:15672
 ```
 
 ---
@@ -559,9 +559,9 @@ uv sync  # Reinstall dependencies
 - Verify JWKS endpoint is reachable from the app
 
 ### Dramatiq worker not processing tasks
-- Check Redis is running: `redis-cli ping`
-- Verify worker is connected: look for "Connected to Redis" in worker logs
-- Check the queue: `redis-cli LLEN dramatiq.default`
+- Check RabbitMQ is running: `rabbitmqctl status`
+- Verify worker is connected: look for "Connected to RabbitMQ" in worker logs
+- Check the queue: `rabbitmqctl list_queues name messages`
 
 ### Kafka consumer not receiving events
 - Verify Kafka is running: `nc -zv kafka 9092`
